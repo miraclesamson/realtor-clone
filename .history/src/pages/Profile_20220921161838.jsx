@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { getAuth, updateProfile } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../firebase";
 
 export default function Profile() {
   const auth = getAuth();
@@ -33,9 +31,7 @@ export default function Profile() {
         });
         //update name in firebase
         const docRef = doc(db, "users", auth.currentUser.uid);
-        await updateDoc(docRef, { name });
       }
-      toast.success("profile updated successfully");
     } catch (error) {
       toast.error("could not update profile details");
     }
@@ -82,7 +78,7 @@ export default function Profile() {
                 Do you Want to Change your name?
                 <span
                   onClick={() => {
-                    changeDetail && onSubmit();
+                    changeDetail && onsubmit();
                     setChangeDetail((prevState) => !prevState);
                   }}
                   className="text-red-600 hover:text-red-700

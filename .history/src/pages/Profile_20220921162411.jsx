@@ -82,7 +82,7 @@ export default function Profile() {
                 Do you Want to Change your name?
                 <span
                   onClick={() => {
-                    changeDetail && onSubmit();
+                    changeDetail && onsubmit();
                     setChangeDetail((prevState) => !prevState);
                   }}
                   className="text-red-600 hover:text-red-700
