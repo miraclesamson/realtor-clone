@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-export default function useAuthStatus() {
+export function useAuthStatus() {
   //login is false by default
   const [loggedIn, setLoggedIn] = useState(false);
   const [checkingStatus, setCheckingStatus] = useState(true);

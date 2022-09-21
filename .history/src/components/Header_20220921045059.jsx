@@ -11,11 +11,10 @@ export default function Header() {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        setPageState("Profile");
+        setPageState("Profile")
       } else {
         setPageState("sign in");
-      }
-    });
+    })
   });
   function pathMatchRoute(route) {
     if (route === location.pathname) {
