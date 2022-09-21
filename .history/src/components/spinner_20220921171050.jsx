@@ -1,0 +1,11 @@
+import Spinner from "./assets/svg/Spinner";
+
+export default function Spinner() {
+  return (
+    <div>
+      <div>
+        <img src={Spinner} alt="loading" className="h-24" />
+      </div>
+    </div>
+  );
+}

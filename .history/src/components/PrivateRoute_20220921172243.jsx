@@ -1,4 +1,4 @@
-import Spinner from "./Spinner";
+import React from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import useAuthStatus from "../hooks/useAuthStatus";
 
