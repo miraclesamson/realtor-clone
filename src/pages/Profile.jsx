@@ -19,7 +19,7 @@ import { FcHome } from "react-icons/fc";
 import { useEffect } from "react";
 import ListingItem from "../components/ListingItem";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
+import Greeting from "../components/Greeting";
 export default function Profile() {
   const auth = getAuth();
   const navigate = useNavigate();
@@ -159,6 +159,9 @@ export default function Profile() {
         ) : (
           <Avatar src={imageurl} sx={{ width: 150, height: 150 }} />
         )}
+        <div>
+          <Greeting name={name} />
+        </div>
         <div className="w-full md:w-[50%] mt-6 px-3">
           <form>
             {/* Name Input */}
