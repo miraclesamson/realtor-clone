@@ -1,4 +1,5 @@
 import { getAuth, updateProfile } from "firebase/auth";
+import Avatar from "@mui/material/Avatar";
 import {
   collection,
   deleteDoc,
@@ -8,18 +9,23 @@ import {
   query,
   updateDoc,
   where,
+  getDoc,
 } from "firebase/firestore";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { db } from "../firebase";
+import { db, storage } from "../firebase";
 import { FcHome } from "react-icons/fc";
 import { useEffect } from "react";
 import ListingItem from "../components/ListingItem";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default function Profile() {
   const auth = getAuth();
   const navigate = useNavigate();
+  const [image, setImage] = useState(null);
+  const [url, setUrl] = useState(null);
+
   const [changeDetail, setChangeDetail] = useState(false);
   const [listings, setListings] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,6 +34,7 @@ export default function Profile() {
     email: auth.currentUser.email,
   });
   const { name, email } = formData;
+  const [imageurl, setImageurl] = useState(null);
   function onLogout() {
     auth.signOut();
     navigate("/");
@@ -40,6 +47,7 @@ export default function Profile() {
   }
   async function onSubmit() {
     try {
+      // console.log(url);
       if (auth.currentUser.displayName !== name) {
         //update display name in firebase auth
         await updateProfile(auth.currentUser, {
@@ -53,6 +61,21 @@ export default function Profile() {
           name,
         });
       }
+      if (url) {
+        //update display name in firebase auth
+        await updateProfile(auth.currentUser, {
+          displayName: name,
+          image: url,
+        });
+
+        // update name in the firestore
+
+        const docRef = doc(db, "users", auth.currentUser.uid);
+        await updateDoc(docRef, {
+          name,
+          image: url,
+        });
+      }
       toast.success("Profile details updated");
     } catch (error) {
       toast.error("Could not update the profile details");
@@ -60,6 +83,7 @@ export default function Profile() {
   }
   useEffect(() => {
     async function fetchUserListings() {
+      // console.log(imageurl);
       const listingRef = collection(db, "listings");
       const q = query(
         listingRef,
@@ -92,10 +116,49 @@ export default function Profile() {
   function onEdit(listingID) {
     navigate(`/edit-listing/${listingID}`);
   }
+
+  const handleImageChange = (e) => {
+    if (e.target.files[0]) {
+      setImage(e.target.files[0]);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const imageRef = ref(storage, `image/${email}`);
+    uploadBytes(imageRef, image)
+      .then(() => {
+        getDownloadURL(imageRef)
+          .then((url) => {
+            setUrl(url);
+          })
+          .catch((error) => {
+            console.log(error.message, "error getting the image url");
+          });
+        setImage(null);
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
+  async function getImage() {
+    const docRef = doc(db, "users", auth.currentUser.uid);
+    const querySnap = await getDoc(docRef);
+    // console.log(querySnap.data());
+    setImageurl(querySnap.data().image);
+  }
+  useEffect(() => {
+    getImage();
+  }, [auth.currentUser]);
   return (
     <>
       <section className="max-w-6xl mx-auto flex justify-center items-center flex-col">
         <h1 className="text-3xl text-center mt-6 font-bold">My Profile</h1>
+        {url ? (
+          <Avatar src={url} sx={{ width: 150, height: 150 }} />
+        ) : (
+          <Avatar src={imageurl} sx={{ width: 150, height: 150 }} />
+        )}
         <div className="w-full md:w-[50%] mt-6 px-3">
           <form>
             {/* Name Input */}
@@ -110,9 +173,7 @@ export default function Profile() {
                 changeDetail && "bg-red-200 focus:bg-red-200"
               }`}
             />
-
             {/* Email Input */}
-
             <input
               type="email"
               id="email"
@@ -120,6 +181,22 @@ export default function Profile() {
               disabled
               className="mb-6 w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition ease-in-out"
             />
+            {/*profile picture*/}
+
+            {changeDetail && (
+              <div>
+                <input type="file" onChange={handleImageChange} />
+                <span
+                  onClick={handleSubmit}
+                  className="
+                bg-blue-600 rounded p-1 font-semibold text-white 
+                hover:bg-blue-700
+                "
+                >
+                  upload Image
+                </span>
+              </div>
+            )}
 
             <div className="flex justify-between whitespace-nowrap text-sm sm:text-lg mb-6">
               <p className="flex items-center ">

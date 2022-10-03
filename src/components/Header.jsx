@@ -1,7 +1,9 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
+import { icons } from "react-icons/lib";
 import { useLocation, useNavigate } from "react-router-dom";
 import Profile from "../pages/Profile";
+import { CgProfile } from "react-icons/cg";
 
 export default function Header() {
   const [pageState, setPageState] = useState("sign in");
@@ -33,7 +35,7 @@ export default function Header() {
             onClick={() => navigate("/")}
           />
         </div>
-        <div>
+        <div className="">
           <ul className="flex space-x-10">
             <li
               className={`cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] border-b-transparent ${
@@ -52,13 +54,13 @@ export default function Header() {
               Offers
             </li>
             <li
-              className={`cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] border-b-transparent ${
+              className={` flex items-center cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] border-b-transparent ${
                 pathMatchRoute("/sign-in") ||
                 (pathMatchRoute("/profile") && "text-black border-b-red-500")
               }`}
               onClick={() => navigate("/profile")}
             >
-              {pageState}
+              <CgProfile /> {pageState}
             </li>
           </ul>
         </div>
